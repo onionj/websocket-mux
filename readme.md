@@ -66,13 +66,13 @@ fmt.Println("client get :", string(data)
 #### Run server:
 
 ```bash
-go run ./examples/pingpong.go -server
+go run ./server.go
 ```
 
 #### Run client:
 
 ```bash
-go run ./examples/pingpong.go -client
+go run ./client.go
 ```
 
 #### server logs:
