@@ -85,8 +85,6 @@ func wsServerHandler(writer http.ResponseWriter, request *http.Request) {
 
 		typ, lenght, id := ParseHeader(data[:NUM_BYTES_HEADER])
 
-		fmt.Println(string(data[NUM_BYTES_HEADER:]))
-
 		switch typ {
 		case TYPE_INITIAL:
 			stream := newStream(id, connAdaptor)
