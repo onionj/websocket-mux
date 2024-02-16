@@ -27,8 +27,8 @@ func TestPingPong(t *testing.T) {
 
 	time.Sleep(time.Second / time.Duration(2))
 
-	client := NewClient()
-	client.Start("ws://127.0.0.1:8080/api")
+	client := NewClient("ws://127.0.0.1:8080/api")
+	client.Start()
 
 	stream, err := client.Dial()
 	if err != nil {

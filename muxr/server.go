@@ -24,11 +24,11 @@ func (sh *serverHandlers) handle(pattern string, handler Handler) {
 var defaultServerHandlers = &serverHandlers{}
 
 type wsServer struct {
-	addr string
+	bindAddr string
 }
 
-func NewWsServer(addr string) *wsServer {
-	server := &wsServer{addr: addr}
+func NewWsServer(bindAddr string) *wsServer {
+	server := &wsServer{bindAddr: bindAddr}
 	return server
 }
 
@@ -37,25 +37,25 @@ func (s *wsServer) Handle(pattern string, handler Handler) {
 }
 
 func (s *wsServer) ListenAndServe() {
-	fmt.Println("ListenAndServe on", s.addr)
+	fmt.Println("ListenAndServe on", s.bindAddr)
 
 	for pattern := range defaultServerHandlers.Handlers {
 		http.HandleFunc(pattern, wsServerHandler)
 	}
 
-	if err := http.ListenAndServe(s.addr, nil); err != nil {
+	if err := http.ListenAndServe(s.bindAddr, nil); err != nil {
 		panic(err)
 	}
 }
 
 func (s *wsServer) ListenAndServeTLS(certFile string, keyFile string) {
-	fmt.Println("ListenAndServeTLS on", s.addr)
+	fmt.Println("ListenAndServeTLS on", s.bindAddr)
 
 	for pattern := range defaultServerHandlers.Handlers {
 		http.HandleFunc(pattern, wsServerHandler)
 	}
 
-	if err := http.ListenAndServeTLS(s.addr, certFile, keyFile, nil); err != nil {
+	if err := http.ListenAndServeTLS(s.bindAddr, certFile, keyFile, nil); err != nil {
 		panic(err)
 	}
 }

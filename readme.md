@@ -36,8 +36,8 @@ server.ListenAndServeTLS(certFile, keyFile)
 ## Muxr Client:
 
 ```go
-client := muxr.NewClient()
-client.Start("ws://127.0.0.1:8080/api")
+client := muxr.NewClient("ws://127.0.0.1:8080/api")
+client.Start()
 defer client.Stop()
 
 stream, err := client.Dial()

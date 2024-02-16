@@ -10,27 +10,29 @@ import (
 
 type Client struct {
 	sync.Mutex
+	serverAddr     string
 	connAdaptor    *ConnAdaptor
 	isClosed       bool
 	counter        uint32
 	streamsManager StreamManager
 }
 
-func NewClient() *Client {
+func NewClient(serverAddr string) *Client {
 	return &Client{
-		isClosed: true,
-		counter:  1,
+		serverAddr: serverAddr,
+		isClosed:   true,
+		counter:    1,
 		streamsManager: StreamManager{
 			Streams: make(map[uint32]*Stream),
 		},
 	}
 }
 
-func (c *Client) Start(url string) error {
+func (c *Client) Start() error {
 	c.Lock()
 	defer c.Unlock()
 
-	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
+	conn, _, err := websocket.DefaultDialer.Dial(c.serverAddr, nil)
 	if err != nil {
 		return err
 	}
