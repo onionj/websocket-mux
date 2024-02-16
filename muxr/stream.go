@@ -23,7 +23,7 @@ func newStream(
 ) *Stream {
 	return &Stream{
 		id:             id,
-		reciverChannel: make(chan []byte),
+		reciverChannel: make(chan []byte, 100), // TODO, replace this channel with a queue
 		isClosed:       false,
 		connAdaptor:    connAdaptor,
 	}
@@ -56,12 +56,6 @@ func (st *Stream) Close() {
 }
 
 func (st *Stream) Kill() {
-
-	// Clear the channel
-	select {
-	case <-st.reciverChannel:
-	default:
-	}
 
 	st.Lock()
 	defer st.Unlock()

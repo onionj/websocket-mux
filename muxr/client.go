@@ -52,7 +52,7 @@ func (c *Client) Start() error {
 			switch typ {
 			case TYPE_DATA:
 				if stream, ok := c.streamsManager.Get(id); ok {
-					go func(stream *Stream) {
+					func(stream *Stream) {
 						stream.Lock()
 						defer stream.Unlock()
 						if !stream.isClosed {
