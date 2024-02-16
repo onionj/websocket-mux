@@ -90,4 +90,4 @@ client send: Ping
 client get : Pong
 ```
 
-# Examples: you can find more examples here: [Examples Folder](./example/)
+# You can find more examples here: [Example Folder](./example/)
