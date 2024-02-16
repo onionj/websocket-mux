@@ -48,7 +48,10 @@ func serverRunner() {
 		fmt.Println("server send:", string(msg), ",streamId:", stream.Id())
 	})
 
-	server.ListenAndServe()
+	if err := server.ListenAndServe(); err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func clientRunner() {

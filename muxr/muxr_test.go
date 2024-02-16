@@ -22,7 +22,8 @@ func TestPingPong(t *testing.T) {
 
 		})
 
-		server.ListenAndServe()
+		err := server.ListenAndServe()
+		assert.Equal(t, nil, err)
 	}()
 
 	time.Sleep(time.Second / time.Duration(2))

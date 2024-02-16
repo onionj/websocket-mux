@@ -26,7 +26,10 @@ server.Handle("/api", func(stream *muxr.Stream) {
         fmt.Println("server send:", string(msg))
 	})
 
-server.ListenAndServe()
+err := server.ListenAndServe()
+if err != nil {
+    fmt.Println(err)
+    return
 ```
 > For TLS: Replace the last line with this line:
 ```go

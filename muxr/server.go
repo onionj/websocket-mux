@@ -36,7 +36,7 @@ func (s *wsServer) Handle(pattern string, handler Handler) {
 	defaultServerHandlers.handle(pattern, handler)
 }
 
-func (s *wsServer) ListenAndServe() {
+func (s *wsServer) ListenAndServe() error {
 	fmt.Println("ListenAndServe on", s.bindAddr)
 
 	for pattern := range defaultServerHandlers.Handlers {
@@ -44,11 +44,12 @@ func (s *wsServer) ListenAndServe() {
 	}
 
 	if err := http.ListenAndServe(s.bindAddr, nil); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
-func (s *wsServer) ListenAndServeTLS(certFile string, keyFile string) {
+func (s *wsServer) ListenAndServeTLS(certFile string, keyFile string) error {
 	fmt.Println("ListenAndServeTLS on", s.bindAddr)
 
 	for pattern := range defaultServerHandlers.Handlers {
@@ -56,8 +57,9 @@ func (s *wsServer) ListenAndServeTLS(certFile string, keyFile string) {
 	}
 
 	if err := http.ListenAndServeTLS(s.bindAddr, certFile, keyFile, nil); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
