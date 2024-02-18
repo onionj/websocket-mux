@@ -29,9 +29,8 @@ func main() {
 }
 
 func serverRunner() {
-	server := muxr.NewWsServer(":8080")
-
-	server.Handle("/api", func(stream *muxr.Stream) {
+	server := muxr.NewServer(":8080")
+	server.Handle("/", func(stream *muxr.Stream) {
 		data, err := stream.Read()
 		if err != nil {
 			fmt.Println(err.Error())
@@ -56,7 +55,7 @@ func serverRunner() {
 
 func clientRunner() {
 
-	client := muxr.NewClient("ws://127.0.0.1:8080/api")
+	client := muxr.NewClient("ws://127.0.0.1:8080/")
 	client.Start()
 	defer client.Stop()
 

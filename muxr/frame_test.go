@@ -7,7 +7,6 @@ import (
 )
 
 func TestFrameOpen(t *testing.T) {
-
 	payload := []byte{6, 6, 6, 6, 6, 6, 6, 6, 6}
 	lenght := uint16(len(payload))
 	streamId := uint32(1332)

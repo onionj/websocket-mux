@@ -3,6 +3,7 @@ package muxr
 import (
 	"errors"
 	"log"
+	"net/http"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -32,7 +33,10 @@ func (c *Client) Start() error {
 	c.Lock()
 	defer c.Unlock()
 
-	conn, _, err := websocket.DefaultDialer.Dial(c.serverAddr, nil)
+	header := make(http.Header)
+	header.Set("websocket-mux", VERSION)
+
+	conn, _, err := websocket.DefaultDialer.Dial(c.serverAddr, header)
 	if err != nil {
 		return err
 	}
@@ -78,10 +82,12 @@ func (c *Client) Start() error {
 func (c *Client) Stop() {
 	c.Lock()
 	defer c.Unlock()
+	if !c.isClosed {
+		closeHandler := c.connAdaptor.Conn.CloseHandler()
+		closeHandler(websocket.CloseNormalClosure, "normal")
+	}
 	c.isClosed = true
 	c.streamsManager.KillAll()
-	closeHandler := c.connAdaptor.Conn.CloseHandler()
-	closeHandler(websocket.CloseNormalClosure, "normal")
 }
 
 func (c *Client) getStreamId() uint32 {
