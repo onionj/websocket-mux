@@ -107,7 +107,7 @@ func (c *Client) Dial() (*Stream, error) {
 	}
 
 	stream := newStream(streamId, c.connAdaptor)
-	stream.connAdaptor.WritePacket(TYPE_INITIAL, streamId, []byte{})
+	stream.ConnAdaptor.WritePacket(TYPE_INITIAL, streamId, []byte{})
 	c.streamsManager.Set(streamId, stream)
 	return stream, nil
 }

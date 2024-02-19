@@ -11,7 +11,7 @@ type Stream struct {
 	id             uint32
 	reciverChannel chan []byte
 	isClosed       bool
-	connAdaptor    *ConnAdaptor
+	ConnAdaptor    *ConnAdaptor
 }
 
 var ErrStreamClosed = errors.New("stream closed")
@@ -25,7 +25,7 @@ func newStream(
 		id:             id,
 		reciverChannel: make(chan []byte, 100), // TODO, replace this channel with a queue
 		isClosed:       false,
-		connAdaptor:    connAdaptor,
+		ConnAdaptor:    connAdaptor,
 	}
 }
 
@@ -43,7 +43,7 @@ func (st *Stream) Write(data []byte) error {
 	if st.isClosed {
 		return ErrStreamClosed
 	}
-	err := st.connAdaptor.WritePacket(TYPE_DATA, st.id, data)
+	err := st.ConnAdaptor.WritePacket(TYPE_DATA, st.id, data)
 	if err != nil {
 		return ErrStreamClosed
 	}
@@ -51,7 +51,7 @@ func (st *Stream) Write(data []byte) error {
 }
 
 func (st *Stream) Close() {
-	st.connAdaptor.WritePacket(TYPE_CLOSE, st.id, []byte{})
+	st.ConnAdaptor.WritePacket(TYPE_CLOSE, st.id, []byte{})
 	st.Kill()
 }
 

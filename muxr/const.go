@@ -3,7 +3,7 @@ package muxr
 import "errors"
 
 const (
-	VERSION          string = "v0.2.1"
+	VERSION          string = "v0.3.1"
 	NUM_BYTES_HEADER        = 7
 	TYPE_INITIAL     uint8  = 1 // 0000 0001
 	TYPE_DATA        uint8  = 2 // 0000 0010
