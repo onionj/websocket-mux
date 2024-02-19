@@ -45,7 +45,7 @@ func (st *Stream) Write(data []byte) error {
 	}
 	err := st.ConnAdaptor.WritePacket(TYPE_DATA, st.id, data)
 	if err != nil {
-		return ErrStreamClosed
+		return ErrTunnelClosed
 	}
 	return nil
 }

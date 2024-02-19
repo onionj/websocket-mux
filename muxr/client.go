@@ -1,7 +1,6 @@
 package muxr
 
 import (
-	"errors"
 	"log"
 	"net/http"
 	"sync"
@@ -103,7 +102,7 @@ func (c *Client) Dial() (*Stream, error) {
 	streamId := c.getStreamId()
 
 	if c.isClosed {
-		return nil, errors.New("the tunnel is not ready")
+		return nil, ErrTunnelClosed
 	}
 
 	stream := newStream(streamId, c.connAdaptor)
