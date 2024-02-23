@@ -99,12 +99,13 @@ func (c *Client) StartForever() (closer func(), err error) {
 				fmt.Println("muxr StartForEver: closed")
 				return
 			default:
-				time.Sleep(time.Second / 50)
+				time.Sleep(time.Second / 10)
 				if c.isClosed {
 					fmt.Println("muxr StartForEver: restarting")
 					err = c.Start()
 					if err != nil {
 						fmt.Println("muxr StartForEver error:", err)
+						time.Sleep(time.Second * 2)
 					}
 				}
 			}
