@@ -16,7 +16,6 @@ type Stream struct {
 
 var ErrStreamClosed = errors.New("stream closed")
 
-// expirationTime: If the stream remains inactive for a certain period, it will be automatically terminated or destroyed.
 func newStream(
 	id uint32,
 	connAdaptor *ConnAdaptor,

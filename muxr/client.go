@@ -1,9 +1,11 @@
 package muxr
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -78,6 +80,39 @@ func (c *Client) Start() error {
 	return nil
 }
 
+// Begin client and launch a goroutine with a loop to continuously restart the tunnel if it closes.
+func (c *Client) StartForever() (closer func(), err error) {
+	exitChan := make(chan struct{}, 1)
+	err = c.Start()
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		for {
+			select {
+			case <-exitChan:
+				fmt.Println("muxr StartForEver: closed")
+				return
+			default:
+				time.Sleep(time.Second / 50)
+				if c.isClosed {
+					fmt.Println("muxr StartForEver: restarting")
+					err = c.Start()
+					if err != nil {
+						fmt.Println("muxr StartForEver error:", err)
+					}
+				}
+			}
+		}
+	}()
+
+	return func() {
+		exitChan <- struct{}{}
+		c.Stop()
+	}, nil
+}
+
 func (c *Client) Stop() {
 	c.Lock()
 	defer c.Unlock()
@@ -100,6 +135,11 @@ func (c *Client) getStreamId() uint32 {
 
 func (c *Client) Dial() (*Stream, error) {
 	streamId := c.getStreamId()
+
+	loopCounter := 0
+	for ; c.isClosed && loopCounter < 10; loopCounter++ {
+		time.Sleep(time.Second / 10)
+	}
 
 	if c.isClosed {
 		return nil, ErrTunnelClosed
