@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestPingPongWithMuxrClientAndServer tests ping-pong communication between a muxr client and server.
 func TestPingPongWithMuxrClientAndServer(t *testing.T) {
 	go func() {
 		server := NewServer(":19881")
@@ -55,6 +56,7 @@ func TestPingPongWithMuxrClientAndServer(t *testing.T) {
 	assert.Equal(t, ErrStreamClosed, err)
 }
 
+// TestPingPongWithGorillaClientAndMuxrServer tests ping-pong communication between a Gorilla WebSocket client and a muxr server.
 func TestPingPongWithGorillaClientAndMuxrServer(t *testing.T) {
 	totalLoop := 50
 

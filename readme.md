@@ -32,30 +32,35 @@ import (
 )
 
 func main() {    
+    // Create a new Muxr server listening on port 8080.
     server := muxr.NewWsServer(":8080")
 
+    // Handle WebSocket connections on the "/api" endpoint.
     server.Handle("/api", func(stream *muxr.Stream) {
         for {
+            // Read data from the client.
             data, err := stream.Read()
             if err != nil {
-                fmt.Println(err.Error())
+                fmt.Println("Error reading from client:", err)
                 return
             }
             fmt.Println("Server received:", string(data))
 
+            // Send a response back to the client.
             msg := []byte("Pong")
             err = stream.Write(msg)
             if err != nil {
-                fmt.Println(err.Error())
+                fmt.Println("Error writing to client:", err)
                 return
             }
             fmt.Println("Server sent:", string(msg))
         }
     })
 
+    // Start the Muxr server.
     err := server.ListenAndServe()
     if err != nil {
-        fmt.Println(err)
+        fmt.Println("Error starting server:", err)
         return
     }
 }
@@ -74,36 +79,40 @@ import (
 )
 
 func main() {
+    // Create a new Muxr client connecting to the server.
     client := muxr.NewClient("ws://127.0.0.1:8080/api")
     client.Start()
     defer client.Stop()
 
+    // Establish a stream for communication with the server.
     stream, err := client.Dial()
     if err != nil {
-        fmt.Println(err.Error())
+        fmt.Println("Error establishing stream:", err)
         return
     }
     defer stream.Close()
 
+    // Send a message to the server.
     msg := []byte("Ping")
-
     if err = stream.Write(msg); err != nil {
-        fmt.Println(err.Error())
+        fmt.Println("Error sending message:", err)
         return
     }
     fmt.Println("Client sent:", string(msg))
 
+    // Read the response from the server.
     data, err := stream.Read()
     if err != nil {
-        fmt.Println(err.Error())
+        fmt.Println("Error reading response:", err)
         return
     }
     fmt.Println("Client received:", string(data))
 }
+
 ```
 
 ## Examples
-There are other examples provided in the [example](./example/) directory
+Explore additional examples provided in the [example](./example/) directory
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Client represents a client that connects to a server.
 type Client struct {
 	sync.Mutex
 	serverAddr     string
@@ -19,6 +20,7 @@ type Client struct {
 	streamsManager StreamManager
 }
 
+// NewClient creates and returns a new instance of Client with the provided server address.
 func NewClient(serverAddr string) *Client {
 	return &Client{
 		serverAddr: serverAddr,
@@ -30,6 +32,8 @@ func NewClient(serverAddr string) *Client {
 	}
 }
 
+// Start establishes a connection and initiates communication with the server.
+// It returns an error if connection setup fails.
 func (c *Client) Start() error {
 	c.Lock()
 	defer c.Unlock()
@@ -113,6 +117,7 @@ func (c *Client) StartForever() (closer func(), err error) {
 	}, nil
 }
 
+// Stop closes the client's connection and releases associated resources.
 func (c *Client) Stop() {
 	c.Lock()
 	defer c.Unlock()
@@ -133,6 +138,8 @@ func (c *Client) getStreamId() uint32 {
 	return current
 }
 
+// Dial establishes a new stream with the server.
+// It returns a pointer to the created stream and any error encountered.
 func (c *Client) Dial() (*Stream, error) {
 	streamId := c.getStreamId()
 

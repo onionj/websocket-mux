@@ -8,22 +8,27 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Handler represents a function that handles WebSocket streams.
 type Handler func(*Stream)
 
+// wsServer represents a WebSocket server.
 type wsServer struct {
 	bindAddr string
 	handlers map[string]Handler
 }
 
+// NewServer creates and returns a new WebSocket server instance.
 func NewServer(bindAddr string) *wsServer {
 	server := &wsServer{bindAddr: bindAddr, handlers: make(map[string]Handler)}
 	return server
 }
 
+// Handle registers a handler function for the given pattern.
 func (s wsServer) Handle(pattern string, handler Handler) {
 	s.handlers[pattern] = handler
 }
 
+// ListenAndServe starts the WebSocket server and listens for incoming connections.
 func (s *wsServer) ListenAndServe() error {
 	fmt.Println("ListenAndServe on", s.bindAddr)
 
@@ -39,6 +44,7 @@ func (s *wsServer) ListenAndServe() error {
 	return nil
 }
 
+// ListenAndServeTLS starts the WebSocket server with TLS encryption and listens for incoming connections.
 func (s *wsServer) ListenAndServeTLS(certFile string, keyFile string) error {
 	fmt.Println("ListenAndServeTLS on", s.bindAddr)
 
@@ -56,6 +62,7 @@ func (s *wsServer) ListenAndServeTLS(certFile string, keyFile string) error {
 
 var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
 
+// wsServerHandler handles incoming WebSocket connections.
 func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Request) {
 	conn, err := upgrader.Upgrade(writer, request, nil)
 
@@ -77,7 +84,7 @@ func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 	streamsManager := StreamManager{Streams: make(map[uint32]*Stream)}
 	defer streamsManager.KillAll()
 
-	// Handle muxr conn (in case the client is muxr.client)
+	// Handle muxr connection (in case the client is a muxr client)
 	if IsMuxClient {
 		for {
 			_, data, err := conn.ReadMessage()
@@ -121,7 +128,7 @@ func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 				continue
 			}
 		}
-	} else { // Single stream mode (handle normal websocket clients)
+	} else { // Single stream mode (handle normal WebSocket clients)
 		streamId := uint32(0)
 		stream := newStream(streamId, connAdaptor)
 		streamsManager.Set(streamId, stream)

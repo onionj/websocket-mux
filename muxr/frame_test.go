@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestFrameOpen tests the creation and parsing of a data frame.
 func TestFrameOpen(t *testing.T) {
 	payload := []byte{6, 6, 6, 6, 6, 6, 6, 6, 6}
 	lenght := uint16(len(payload))
@@ -24,6 +25,7 @@ func TestFrameOpen(t *testing.T) {
 	assert.Equal(t, payload, _payload)
 }
 
+// TestFrameClose tests the creation and parsing of a close frame.
 func TestFrameClose(t *testing.T) {
 
 	lenght := uint16(0)
