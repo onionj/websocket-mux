@@ -23,7 +23,7 @@ func newStream(
 ) *Stream {
 	return &Stream{
 		id:             id,
-		reciverChannel: make(chan []byte, 100), // TODO, replace this channel with a queue
+		reciverChannel: make(chan []byte, 200),
 		isClosed:       false,
 		ConnAdaptor:    connAdaptor,
 	}
