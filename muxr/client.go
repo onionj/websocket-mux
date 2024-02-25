@@ -65,7 +65,11 @@ func (c *Client) Start() error {
 						stream.Lock()
 						defer stream.Unlock()
 						if !stream.isClosed {
-							stream.reciverChannel <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+lenght]
+							select {
+							case stream.ReciverChan <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+lenght]:
+							default:
+								fmt.Println("muxr: stream buffer is full")
+							}
 						}
 					}(stream)
 				}
@@ -153,7 +157,7 @@ func (c *Client) Dial() (*Stream, error) {
 		return nil, ErrTunnelClosed
 	}
 
-	stream := newStream(streamId, c.connAdaptor)
+	stream := newStream(streamId, c.connAdaptor, RESIVER_CHANNEL_SIZE)
 	stream.ConnAdaptor.WritePacket(TYPE_INITIAL, streamId, []byte{})
 	c.streamsManager.Set(streamId, stream)
 	return stream, nil

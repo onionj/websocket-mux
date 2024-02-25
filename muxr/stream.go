@@ -8,10 +8,10 @@ import (
 
 type Stream struct {
 	sync.Mutex
-	id             uint32
-	reciverChannel chan []byte
-	isClosed       bool
-	ConnAdaptor    *ConnAdaptor
+	id          uint32
+	isClosed    bool
+	ReciverChan chan []byte
+	ConnAdaptor *ConnAdaptor
 }
 
 var ErrStreamClosed = errors.New("stream closed")
@@ -20,18 +20,19 @@ var ErrStreamClosed = errors.New("stream closed")
 func newStream(
 	id uint32,
 	connAdaptor *ConnAdaptor,
+	reciverChanSize int,
 ) *Stream {
 	return &Stream{
-		id:             id,
-		reciverChannel: make(chan []byte, 200),
-		isClosed:       false,
-		ConnAdaptor:    connAdaptor,
+		id:          id,
+		isClosed:    false,
+		ReciverChan: make(chan []byte, reciverChanSize),
+		ConnAdaptor: connAdaptor,
 	}
 }
 
 // Read reads data from the stream's receiver channel.
 func (st *Stream) Read() ([]byte, error) {
-	data, ok := <-st.reciverChannel
+	data, ok := <-st.ReciverChan
 	if !ok {
 		return nil, io.EOF
 	}
@@ -69,7 +70,7 @@ func (st *Stream) Kill() {
 	}
 
 	st.isClosed = true
-	close(st.reciverChannel)
+	close(st.ReciverChan)
 }
 
 // IsClosed returns true if the stream is closed, otherwise false.

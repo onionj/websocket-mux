@@ -97,7 +97,7 @@ func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 
 			switch typ {
 			case TYPE_INITIAL:
-				stream := newStream(id, connAdaptor)
+				stream := newStream(id, connAdaptor, RESIVER_CHANNEL_SIZE)
 				streamsManager.Set(id, stream)
 				go func() {
 					defer func() {
@@ -115,7 +115,12 @@ func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 						stream.Lock()
 						defer stream.Unlock()
 						if !stream.isClosed {
-							stream.reciverChannel <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+lenght]
+							select {
+							case stream.ReciverChan <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+lenght]:
+							default:
+								fmt.Println("muxr: stream buffer is full")
+							}
+
 						}
 					}()
 				}
@@ -130,7 +135,7 @@ func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 		}
 	} else { // Single stream mode (handle normal WebSocket clients)
 		streamId := uint32(0)
-		stream := newStream(streamId, connAdaptor)
+		stream := newStream(streamId, connAdaptor, RESIVER_CHANNEL_SIZE)
 		streamsManager.Set(streamId, stream)
 		parsedURL, err := url.Parse(request.RequestURI)
 		if err != nil {
@@ -164,7 +169,7 @@ func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 					isAlive = false
 					return
 				}
-				stream.reciverChannel <- data
+				stream.ReciverChan <- data
 			}()
 		}
 	}
