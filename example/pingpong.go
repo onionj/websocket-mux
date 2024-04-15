@@ -64,8 +64,11 @@ func serverRunner() {
 func clientRunner() {
 
 	client := muxr.NewClient("ws://127.0.0.1:8080/")
-	client.Start()
-	defer client.Stop()
+	closerFunc, err := client.StartForever()
+	if err != nil {
+		panic(err)
+	}
+	defer closerFunc()
 
 	// Create a wait group to synchronize goroutines.
 	wg := sync.WaitGroup{}

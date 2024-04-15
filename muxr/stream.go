@@ -20,12 +20,12 @@ var ErrStreamClosed = errors.New("stream closed")
 func newStream(
 	id uint32,
 	connAdaptor *ConnAdaptor,
-	reciverChanSize int,
+	receiverChanSize int,
 ) *Stream {
 	return &Stream{
 		id:          id,
 		isClosed:    false,
-		ReciverChan: make(chan []byte, reciverChanSize),
+		ReciverChan: make(chan []byte, receiverChanSize),
 		ConnAdaptor: connAdaptor,
 	}
 }

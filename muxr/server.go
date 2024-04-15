@@ -11,25 +11,25 @@ import (
 // Handler represents a function that handles WebSocket streams.
 type Handler func(*Stream)
 
-// wsServer represents a WebSocket server.
-type wsServer struct {
+// WsServer represents a WebSocket server.
+type WsServer struct {
 	bindAddr string
 	handlers map[string]Handler
 }
 
 // NewServer creates and returns a new WebSocket server instance.
-func NewServer(bindAddr string) *wsServer {
-	server := &wsServer{bindAddr: bindAddr, handlers: make(map[string]Handler)}
+func NewServer(bindAddr string) *WsServer {
+	server := &WsServer{bindAddr: bindAddr, handlers: make(map[string]Handler)}
 	return server
 }
 
 // Handle registers a handler function for the given pattern.
-func (s wsServer) Handle(pattern string, handler Handler) {
+func (s *WsServer) Handle(pattern string, handler Handler) {
 	s.handlers[pattern] = handler
 }
 
 // ListenAndServe starts the WebSocket server and listens for incoming connections.
-func (s *wsServer) ListenAndServe() error {
+func (s *WsServer) ListenAndServe() error {
 	fmt.Println("ListenAndServe on", s.bindAddr)
 
 	httpServeMux := http.NewServeMux()
@@ -45,7 +45,7 @@ func (s *wsServer) ListenAndServe() error {
 }
 
 // ListenAndServeTLS starts the WebSocket server with TLS encryption and listens for incoming connections.
-func (s *wsServer) ListenAndServeTLS(certFile string, keyFile string) error {
+func (s *WsServer) ListenAndServeTLS(certFile string, keyFile string) error {
 	fmt.Println("ListenAndServeTLS on", s.bindAddr)
 
 	httpServeMux := http.NewServeMux()
@@ -63,7 +63,7 @@ func (s *wsServer) ListenAndServeTLS(certFile string, keyFile string) error {
 var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
 
 // wsServerHandler handles incoming WebSocket connections.
-func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Request) {
+func (s *WsServer) wsServerHandler(writer http.ResponseWriter, request *http.Request) {
 	conn, err := upgrader.Upgrade(writer, request, nil)
 
 	wsMuxVersion := request.Header.Get("websocket-mux")
@@ -75,7 +75,7 @@ func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 	}
 	defer func() {
 		closeHandler := conn.CloseHandler()
-		closeHandler(websocket.CloseNormalClosure, "")
+		_ = closeHandler(websocket.CloseNormalClosure, "")
 	}()
 
 	fmt.Println("websocket: Open, IsMuxClient:", IsMuxClient, wsMuxVersion)
@@ -145,7 +145,7 @@ func (s *wsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 			defer func() {
 				stream.Kill()
 				closeHandler := conn.CloseHandler()
-				closeHandler(websocket.CloseNormalClosure, "")
+				_ = closeHandler(websocket.CloseNormalClosure, "")
 			}()
 
 			s.handlers[parsedURL.Path](stream)

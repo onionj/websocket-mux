@@ -56,7 +56,7 @@ func (c *Client) Start() error {
 				break
 			}
 
-			typ, lenght, id := ParseHeader(data[:NUM_BYTES_HEADER])
+			typ, length, id := ParseHeader(data[:NUM_BYTES_HEADER])
 
 			switch typ {
 			case TYPE_DATA:
@@ -66,7 +66,7 @@ func (c *Client) Start() error {
 						defer stream.Unlock()
 						if !stream.isClosed {
 							select {
-							case stream.ReciverChan <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+lenght]:
+							case stream.ReciverChan <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+length]:
 							default:
 								fmt.Println("muxr: stream buffer is full")
 							}
@@ -88,7 +88,7 @@ func (c *Client) Start() error {
 	return nil
 }
 
-// Begin client and launch a goroutine with a loop to continuously restart the tunnel if it closes.
+// StartForever Begin client and launch a goroutine with a loop to continuously restart the tunnel if it closes.
 func (c *Client) StartForever() (closer func(), err error) {
 	exitChan := make(chan struct{}, 1)
 	err = c.Start()
@@ -109,7 +109,7 @@ func (c *Client) StartForever() (closer func(), err error) {
 					err = c.Start()
 					if err != nil {
 						fmt.Println("muxr StartForEver error:", err)
-						time.Sleep(time.Second * 2)
+						time.Sleep(time.Second)
 					}
 				}
 			}

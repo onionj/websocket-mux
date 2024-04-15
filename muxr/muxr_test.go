@@ -84,7 +84,7 @@ func TestPingPongWithGorillaClientAndMuxrServer(t *testing.T) {
 
 	defer func() {
 		closeHandler := conn.CloseHandler()
-		closeHandler(websocket.CloseNormalClosure, "")
+		_ = closeHandler(websocket.CloseNormalClosure, "")
 	}()
 
 	for i := 0; i < totalLoop; i++ {
