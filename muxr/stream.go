@@ -8,10 +8,10 @@ import (
 
 type Stream struct {
 	sync.Mutex
-	id          uint32
-	isClosed    bool
-	ReciverChan chan []byte
-	ConnAdaptor *ConnAdaptor
+	id           uint32
+	isClosed     bool
+	ReceiverChan chan []byte
+	ConnAdaptor  *ConnAdaptor
 }
 
 var ErrStreamClosed = errors.New("stream closed")
@@ -23,16 +23,16 @@ func newStream(
 	receiverChanSize int,
 ) *Stream {
 	return &Stream{
-		id:          id,
-		isClosed:    false,
-		ReciverChan: make(chan []byte, receiverChanSize),
-		ConnAdaptor: connAdaptor,
+		id:           id,
+		isClosed:     false,
+		ReceiverChan: make(chan []byte, receiverChanSize),
+		ConnAdaptor:  connAdaptor,
 	}
 }
 
 // Read reads data from the stream's receiver channel.
 func (st *Stream) Read() ([]byte, error) {
-	data, ok := <-st.ReciverChan
+	data, ok := <-st.ReceiverChan
 	if !ok {
 		return nil, io.EOF
 	}
@@ -55,11 +55,11 @@ func (st *Stream) Write(data []byte) error {
 
 // Close closes the stream.
 func (st *Stream) Close() {
-	st.ConnAdaptor.WritePacket(TYPE_CLOSE, st.id, []byte{})
+	_ = st.ConnAdaptor.WritePacket(TYPE_CLOSE, st.id, []byte{})
 	st.Kill()
 }
 
-// kill marks the stream as closed and closes its receiver channel.
+// Kill marks the stream as closed and closes its receiver channel.
 func (st *Stream) Kill() {
 
 	st.Lock()
@@ -70,15 +70,15 @@ func (st *Stream) Kill() {
 	}
 
 	st.isClosed = true
-	close(st.ReciverChan)
+	close(st.ReceiverChan)
 }
 
-// IsClosed returns true if the stream is closed, otherwise false.
+// IsClose returns true if the stream is closed, otherwise false.
 func (st *Stream) IsClose() bool {
 	return st.isClosed
 }
 
-// ID returns the ID of the stream.
+// Id returns the ID of the stream.
 func (st *Stream) Id() uint32 {
 	return st.id
 }

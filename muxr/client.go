@@ -66,7 +66,7 @@ func (c *Client) Start() error {
 						defer stream.Unlock()
 						if !stream.isClosed {
 							select {
-							case stream.ReciverChan <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+length]:
+							case stream.ReceiverChan <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+length]:
 							default:
 								fmt.Println("muxr: stream buffer is full")
 							}

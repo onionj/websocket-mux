@@ -58,7 +58,7 @@ func TestPingPongWithMuxrClientAndServer(t *testing.T) {
 
 // TestPingPongWithGorillaClientAndMuxrServer tests ping-pong communication between a Gorilla WebSocket client and a muxr server.
 func TestPingPongWithGorillaClientAndMuxrServer(t *testing.T) {
-	totalLoop := 50
+	totalLoop := 100
 
 	go func() {
 		server := NewServer(":19882")

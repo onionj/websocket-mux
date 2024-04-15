@@ -116,7 +116,7 @@ func (s *WsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 						defer stream.Unlock()
 						if !stream.isClosed {
 							select {
-							case stream.ReciverChan <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+lenght]:
+							case stream.ReceiverChan <- data[NUM_BYTES_HEADER : NUM_BYTES_HEADER+lenght]:
 							default:
 								fmt.Println("muxr: stream buffer is full")
 							}
@@ -169,7 +169,7 @@ func (s *WsServer) wsServerHandler(writer http.ResponseWriter, request *http.Req
 					isAlive = false
 					return
 				}
-				stream.ReciverChan <- data
+				stream.ReceiverChan <- data
 			}()
 		}
 	}
