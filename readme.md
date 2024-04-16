@@ -82,10 +82,10 @@ func main() {
     // Create a new Muxr client connecting to the server.
     client := muxr.NewClient("ws://127.0.0.1:8080/api")
     closerFunc, err := client.StartForever()
-	if err != nil {
-		panic(err)
-	}
-	defer closerFunc()
+    if err != nil {
+        panic(err)
+    }
+    defer closerFunc()
 
     // Establish a stream for communication with the server.
     stream, err := client.Dial()
